@@ -1,0 +1,103 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Analizador de configuración</h1>
+    <h5>ISC DHCP Server</h5>
+</div>
+
+<div class="row">
+    <div class="col-12 col-md-6">
+        <h3>Configuración global</h3>
+        <div class="row">
+            <div class="col">
+                <p><strong>Dominio:</strong> @Model.Analysis.DomainName</p>
+                <p><strong>Servidores de nombres:</strong> @string.Join(", ", Model.Analysis.DomainNameServers)</p>
+                <p><strong>Tiempo de renta por defecto:</strong> @Model.Analysis.DefaultLeaseTime ms</p>
+                <p><strong>Tiempo de renta máximo:</strong> @Model.Analysis.MaxLeaseTime ms</p>
+                <p>
+                    <strong>Servidor autoritativo:</strong>
+                    @if (Model.Analysis.Authoritative)
+                    {
+                        <span class="badge badge-success">
+                            Verdadero
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-dark">
+                            Falso
+                        </span>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 justify-content-center">
+        <h3>Delaraciones de subred</h3>
+        <div class="row">
+            @foreach (var declaration in Model.Analysis.SubnetDeclarations)
+            {
+                <div class="card">
+                    <div class="card-header">@declaration.NetworkIdentifier/@declaration.NetworkMask</div>
+                    <div class="card-body">
+                        <p class="card-text"><strong>Puerta de enlace:</strong> @declaration.Gateway</p>
+                        <p class="card-text"><strong>Broadcast:</strong> @declaration.Broadcast</p>
+                    </div>
+                    @if (declaration.RangeDefined)
+                    {
+                        <div class="card-footer">
+                            <p class="card-text">@declaration.IpRangeFrom - @declaration.IpRangeTo</p>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <h3>Declaraciones de hosts</h3>
+        <div class="row">
+            <div class="col">
+                <p><strong>Total de hosts mostrados:</strong> @Model.Analysis.HostDeclarations.Count</p>
+            </div>
+            <div class="col align-self-end">
+                <form class="form-row" method="get">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="hostSearch" name="hostSearch" aria-describedby="emailHelp" placeholder="Texto de búsuqeda">
+                        <small id="hostSearch" class="form-text text-muted">Puede buscar por cualquiera de los campos disponibles.</small>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Buscar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Host</th>
+                    <th>MAC</th>
+                    <th>Dirección IP</th>
+                    <th>Nombre</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var declaration in Model.Analysis.HostDeclarations)
+                {
+                    <tr>
+                        <td>@declaration.Host</td>
+                        <td>@declaration.MacAddress</td>
+                        <td>@declaration.IpAddress</td>
+                        <td>@declaration.Hostname</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
